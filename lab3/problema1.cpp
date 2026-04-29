@@ -12,94 +12,63 @@ linked list.
 #include <iostream>
 #include <vector>
 #include <list>
-#include <algorithm>
 
 using namespace std;
 
-class HashTable {
-private:
 
-    vector<list<int>> table;
-    int total_elements;
-    int capacity;
-    const double MAX_LOAD_FACTOR = 1.0; 
+//insert x
+//
 
-    int hash(int x) const {
 
-        int h = x % capacity;
-        if (h < 0) h += capacity;
-        return h;
-    }
+class hashtable {
+	private:
+		vector<list<int>> v;
+		int modulo = 1;
+		void resize(int val)
+		{
+			vector<list<int>> new_v(val);
+			int len = v.size();
+			for (int i = 0; i < len; i++)
+			{
+				for (auto j : v[i])
+				{
+					int poz = i + v[i].size() * len;
+					new_v[poz % val].push_back(j);
 
-    void resize() {
-        int old_capacity = capacity;
-        capacity *= 2; 
-
-        vector<list<int>> new_table(capacity);
-
-        for (int i = 0; i < old_capacity; i++) {
-            for (int val : table[i]) {
-                int new_idx = hash(val);
-                new_table[new_idx].push_back(val);
-            }
-        }
-        table = move(new_table);
-    }
-
-public:
-    HashTable(int initial_capacity = 10) {
-        capacity = initial_capacity;
-        table.resize(capacity);
-        total_elements = 0;
-    }
-
-    bool exists(int x) {
-        int idx = hash(x);
-        for (int val : table[idx]) {
-            if (val == x) return true;
-        }
-        return false;
-    }
-
-    void insert(int x) {
-        if (exists(x)) return; 
-
-        if (total_elements >= capacity * MAX_LOAD_FACTOR) {
-            resize();
-        }
-
-        int idx = hash(x);
-        table[idx].push_back(x);
-        total_elements++;
-    }
-
-    void erase(int x) {
-        int idx = hash(x);
-        auto& bucket = table[idx];
-
-        for (auto it = bucket.begin(); it != bucket.end(); ++it) {
-            if (*it == x) {
-                bucket.erase(it);
-                total_elements--;
-                return;
-            }
-        }
-    }
+				}
+			}
+			v = new_v;
+			modulo = val;
+		}
+	public:
+		hashtable(int val = 30)
+		{
+			resize(val);
+		}
+		void insert(int x)
+		{
+			v[x % modulo].push_back(x);
+		}
+		bool exists(int x)
+		{
+			for (auto i : v[x % modulo])
+				if (x == i)
+					return true;
+			return false;
+		}
+		void erase(int x)
+		{
+			v[x % modulo].erase(find(v[x % modulo].begin(), v[x % modulo].end(), x));
+		}
 };
 
-int main() {
-    HashTable ht;
 
-    ht.insert(10);
-    ht.insert(20);
-    ht.insert(35);
+int main()
+{
+	hashtable v;
+	v.insert(10);	
+	cout << v.exists(10) << '\n';
+	v.erase(10);
+	cout << v.exists(10);
 
-    cout << "Exists 10: " << ht.exists(10) << endl; 
-
-    cout << "Exists 50: " << ht.exists(50) << endl; 
-
-    ht.erase(10);
-    cout << "Exists 10 after erase: " << ht.exists(10) << endl; 
-
-    return 0;
 }
