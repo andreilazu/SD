@@ -1,0 +1,224 @@
+#include <iostream>
+#include <fstream>
+#include <random>
+#include <ctime>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <sstream>
+
+using namespace std;
+
+const int BIG_N = 1e7;
+const int SMALL_N = 2e4;
+
+// ======================================================
+// AUTOMATIC FILE NAMING
+// ======================================================
+
+int bigCounter = 1;
+int smallCounter = 1;
+
+ofstream out;
+
+string getFileName(bool isBig)
+{
+    stringstream ss;
+
+    if (isBig)
+    {
+        ss << "big_teamANDREI-RARES_"
+            << setw(2) << setfill('0') << bigCounter++
+            << ".in";
+    }
+    else
+    {
+        ss << "small_teamANDREI-RARES_"
+            << setw(2) << setfill('0') << smallCounter++
+            << ".in";
+    }
+
+    return ss.str();
+}
+
+void openFile(int sizeV)
+{
+    bool isBig = (sizeV == BIG_N);
+
+    string filename = getFileName(isBig);
+
+    out.open(filename, ios::out | ios::trunc);
+
+    cout << "Generating: " << filename << '\n';
+}
+
+// ======================================================
+// GENERATORS
+// ======================================================
+
+void generatorRandom(int sizeV, int sizeNumber)
+{
+    openFile(sizeV);
+
+    out << sizeV << '\n';
+
+    mt19937 rng(time(0));
+
+    uniform_int_distribution<int> dist(1, sizeNumber);
+
+    for (int i = 0; i < sizeV; i++)
+    {
+        out << dist(rng) << ' ';
+    }
+
+    out.close();
+}
+
+void generatorIncreasing(int sizeV)
+{
+    openFile(sizeV);
+
+    out << sizeV << '\n';
+
+    for (int i = 1; i <= sizeV; i++)
+        out << i << ' ';
+
+    out.close();
+}
+
+void generatorDecreasing(int sizeV)
+{
+    openFile(sizeV);
+
+    out << sizeV << '\n';
+
+    for (int i = sizeV; i >= 1; i--)
+    {
+        out << i << ' ';
+    }
+
+    out.close();
+}
+
+void generatorIncreasingDecreasing(int sizeV,
+    int NumberofSwaps,
+    bool is_increasing)
+{
+    openFile(sizeV);
+
+    vector<int> v(sizeV);
+
+    if (is_increasing)
+    {
+        for (int i = 0; i < sizeV; i++)
+        {
+            v[i] = i;
+        }
+    }
+    else
+    {
+        for (int i = 0; i < sizeV; i++)
+        {
+            v[i] = sizeV - i;
+        }
+    }
+
+    srand(time(0));
+
+    for (int swapCount = 0; swapCount < NumberofSwaps; swapCount++)
+    {
+        int index1 = rand() % sizeV;
+        int index2 = rand() % sizeV;
+
+        swap(v[index1], v[index2]);
+    }
+
+    out << sizeV << '\n';
+
+    for (auto x : v)
+    {
+        out << x << ' ';
+    }
+
+    out.close();
+}
+
+void generatorBranchPrediciton(int sizeV)
+{
+    openFile(sizeV);
+
+    out << sizeV << '\n';
+
+    for (int i = 0; i < sizeV; i++)
+    {
+        if (i % 3 == 0)
+            out << 0;
+        else if (i % 3 == 1)
+            out << 99;
+        else
+            out << 192;
+
+        out << ' ';
+    }
+
+    out.close();
+}
+
+void generatorRADIX(int sizeV)
+{
+    openFile(sizeV);
+
+    string x = "1";
+
+    out << sizeV << '\n';
+
+    for (int i = 1; i <= sizeV; i++)
+    {
+        if (i <= 1000)
+            out << x << ' ';
+        else
+            out << x + to_string(i + i % (i + 100003)) << ' ';
+    }
+
+    out.close();
+}
+
+// ======================================================
+// MAIN
+// ======================================================
+
+int main()
+{
+    generatorIncreasing(SMALL_N);
+    generatorIncreasing(BIG_N);
+
+    generatorDecreasing(SMALL_N);
+    generatorDecreasing(BIG_N);
+
+    generatorRandom(SMALL_N, SMALL_N);
+    generatorRandom(SMALL_N, BIG_N);
+    generatorRandom(BIG_N, SMALL_N);
+    generatorRandom(BIG_N, BIG_N);
+
+    generatorRandom(SMALL_N, 20); // many duplicates
+    generatorRandom(BIG_N, 1000);
+
+    generatorRandom(SMALL_N, 1); // all the same
+    generatorRandom(BIG_N, 1);
+
+    generatorIncreasingDecreasing(SMALL_N, 50, 1);
+    generatorIncreasingDecreasing(BIG_N, 10000, 1);
+
+    generatorIncreasingDecreasing(SMALL_N, 50, 0);
+    generatorIncreasingDecreasing(BIG_N, 10000, 0);
+
+    // WHAT IF THE COMPILER HELPS? TEST BRANCH PREDICTION
+    generatorBranchPrediciton(SMALL_N);
+    generatorBranchPrediciton(BIG_N);
+
+    // FOR RADIX
+    generatorRADIX(SMALL_N);
+    generatorRADIX(BIG_N);
+
+    return 0;
+}
