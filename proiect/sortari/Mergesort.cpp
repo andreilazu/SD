@@ -6,7 +6,7 @@ using namespace std;
 ifstream fin("input.txt");
 ofstream fout("output.txt");
 
-int tmp[20001];
+int tmp[10000001];
 void MergeSort(int v[], int st, int dr){
     if (st < dr){
         int m = (st + dr) / 2;
