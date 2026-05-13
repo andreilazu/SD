@@ -1,1 +1,15 @@
+| Algorithm            | Best Case Input                              | Worst Case Input                                |
+| -------------------- | -------------------------------------------- | ----------------------------------------------- |
+| **Heapsort**         | Any arrangement (performance barely changes) | Any arrangement                                 |
+| **Quicksort**        | Any                                          | Any                                             |
+| **Mergesort**        | Any arrangement                              | Any arrangement                                 |
+| **Introsort**        | Balanced partitions like good Quicksort      | Bad Quicksort partitions → switches to Heapsort |
+| **Patience Sorting** | Already sorted sequence                      | Reverse sorted sequence                         |
+| **Radix Sort**       | Small number of digits                       | Large number of digits                          |
+| **Bubble Sort**      | Already sorted array                         | Reverse sorted array                            |
+| **Insertion Sort**   | Already sorted array                         | Reverse sorted array                            |
+| **Gnome Sort**       | Already sorted array                         | Reverse sorted array                            |
 
+--
+test1_SMALL_SORTED
+test2_BIG_REVERSE_SORTED
